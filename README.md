@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 # OpsMatrix
-=======
 # OpsMatrix Console
->>>>>>> 414dcd0 (changed payops to opsmatrix)
 
 OpsMatrix Console is a modern fintech operations dashboard designed for monitoring transactions, settlements, payment performance, and operational alerts.
 
