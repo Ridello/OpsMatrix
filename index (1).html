@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPSMATRIX — Fintech Operations Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══ LIVE TICKER ══════════════════════════════════════ -->
+<div class="ticker-bar">
+  <div class="ticker-label">LIVE STREAM</div>
+  <div class="ticker-track"><div class="ticker-scroll" id="tickerContent"></div></div>
+  <div class="ticker-status"><span class="pulse-dot"></span><span>SYSTEMS NOMINAL</span></div>
+</div>
+
+<!-- ══ SHELL ════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+        <rect x="0"  y="0"  width="12" height="12" rx="2" fill="#3B82F6"/>
+        <rect x="16" y="0"  width="12" height="12" rx="2" fill="#8B5CF6" opacity=".8"/>
+        <rect x="0"  y="16" width="12" height="12" rx="2" fill="#8B5CF6" opacity=".8"/>
+        <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" opacity=".4"/>
+      </svg>
+      <div class="logo-text">
+        <span class="logo-name">OPSMATRIX</span>
+        <span class="logo-ver">v4.2.1 · Production</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">CORE OPERATIONS</div>
+    <nav>
+      <a class="nav-item active" data-view="dashboard" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span><em class="badge live">LIVE</em>
+      </a>
+      <a class="nav-item" data-view="transactions" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        <span>Transactions</span><em class="badge count" id="navTxCount">—</em>
+      </a>
+      <a class="nav-item" data-view="settlements" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        <span>Settlements</span>
+      </a>
+      <a class="nav-item" data-view="refunds" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109 9"/><path d="M3 3v9h9"/></svg>
+        <span>Refunds</span><em class="badge warn">12</em>
+      </a>
+    </nav>
+
+    <div class="nav-section-label">RISK & SECURITY</div>
+    <nav>
+      <a class="nav-item" data-view="risk" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Risk Engine</span>
+      </a>
+      <a class="nav-item" data-view="fraud" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span>Fraud Monitoring</span><em class="badge danger">3</em>
+      </a>
+      <a class="nav-item" data-view="audit" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Audit Logs</span>
+      </a>
+    </nav>
+
+    <div class="nav-section-label">INFRASTRUCTURE</div>
+    <nav>
+      <a class="nav-item" data-view="api" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>API Status</span><span class="status-pip green"></span>
+      </a>
+      <a class="nav-item" data-view="integrations" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>Integrations</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="uptime-row"><span class="uptime-dot"></span><span>Online · <strong id="uptimeDisplay">99.97%</strong></span></div>
+      <button class="collapse-btn" id="sidebarToggle">
+        <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>Collapse</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+
+    <!-- HEADER -->
+    <header class="top-header">
+      <div class="hdr-left">
+        <div class="breadcrumb">
+          <span class="bc-root">Operations</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="bc-page" id="currentViewLabel">Command Center</span>
+        </div>
+      </div>
+      <div class="hdr-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search transactions, IDs, customers…" autocomplete="off">
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="hdr-right">
+        <div class="latency-chip"><span class="lat-dot"></span><span id="headerLatency">42ms</span></div>
+        <button class="hdr-btn export-btn" id="exportBtn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="hdr-btn notif-btn" id="notifBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge">5</span>
+        </button>
+        <div class="profile-chip">
+          <div class="avatar">AO</div>
+          <div class="profile-info">
+            <span class="p-name">Adewale Ops</span>
+            <span class="p-role">Sr. Analyst</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- NOTIFICATION DROPDOWN -->
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-hdr"><span>Notifications</span><button id="notifClear">Clear all</button></div>
+      <div id="notifList"></div>
+    </div>
+
+    <!-- ══ VIEWS ══════════════════════════════════════ -->
+    <main class="main-scroll">
+
+      <!-- ── VIEW: DASHBOARD ── -->
+      <div class="view active" id="view-dashboard">
+
+        <section class="kpi-grid" id="kpiGrid"></section>
+
+        <div class="two-col">
+          <!-- Transaction Table -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <div class="ptg">
+                <div class="live-badge green"><span class="ld"></span>LIVE STREAM</div>
+                <h2>Transaction Engine</h2>
+              </div>
+              <div class="tx-controls">
+                <div class="ftabs" id="filterTabs">
+                  <button class="ftab active" data-filter="all">All</button>
+                  <button class="ftab" data-filter="success">Success</button>
+                  <button class="ftab" data-filter="pending">Pending</button>
+                  <button class="ftab" data-filter="failed">Failed</button>
+                  <button class="ftab" data-filter="flagged">Flagged</button>
+                </div>
+                <div class="tx-search">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="txSearch" placeholder="Search…">
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>CHANNEL</th><th>AMOUNT</th><th>STATUS</th><th>RISK</th><th>TIME</th><th></th></tr></thead>
+                <tbody id="txTableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="txCount">0 transactions</span>
+              <div class="pager">
+                <button class="pg-btn" id="prevPage">‹</button>
+                <span id="pageInfo">1 / 1</span>
+                <button class="pg-btn" id="nextPage">›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="right-col">
+            <!-- Risk Intelligence -->
+            <div class="panel">
+              <div class="panel-hdr">
+                <div class="ptg">
+                  <div class="live-badge red"><span class="ld red"></span>AI MONITOR</div>
+                  <h2>Risk Intelligence</h2>
+                </div>
+              </div>
+              <div class="risk-body">
+                <div class="gauge-wrap">
+                  <canvas id="riskGaugeCanvas" width="180" height="100"></canvas>
+                  <div class="gauge-label">
+                    <span class="gauge-num" id="fraudScore">2.4</span>
+                    <span class="gauge-sub">Fraud Index</span>
+                  </div>
+                </div>
+                <div class="risk-stats">
+                  <div class="rs"><span>Flagged Today</span><strong class="red" id="flaggedCount">7</strong></div>
+                  <div class="rs"><span>False Positive</span><strong class="amber">1.2%</strong></div>
+                  <div class="rs"><span>Model Accuracy</span><strong class="green">98.7%</strong></div>
+                </div>
+              </div>
+              <div class="hm-section">
+                <div class="hm-label">ANOMALY GRID · 24H</div>
+                <div class="risk-heatmap" id="riskHeatmap"></div>
+              </div>
+              <div class="flagged-list" id="flaggedList"></div>
+            </div>
+
+            <!-- System Health -->
+            <div class="panel">
+              <div class="panel-hdr">
+                <div class="ptg"><h2>System Health</h2><span class="p-sub">Mission Control</span></div>
+                <span class="all-green">● ALL SYSTEMS GO</span>
+              </div>
+              <div class="health-list" id="healthGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="three-col">
+          <div class="panel">
+            <div class="panel-hdr">
+              <div class="ptg"><h2>Transaction Volume</h2><span class="p-sub">30-day trend</span></div>
+              <div class="period-tabs">
+                <button class="ptab active" data-period="30">30D</button>
+                <button class="ptab" data-period="7">7D</button>
+                <button class="ptab" data-period="24">24H</button>
+              </div>
+            </div>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Channel Split</h2><span class="p-sub">Distribution</span></div></div>
+            <div class="donut-box">
+              <canvas id="donutChart"></canvas>
+              <div id="donutLegend" class="donut-legend"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Success Rate</h2><span class="p-sub">By channel %</span></div></div>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Exception Queue -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="ptg">
+              <div class="live-badge amber"><span class="ld amber"></span>ACTION REQUIRED</div>
+              <h2>Exception Queue</h2>
+            </div>
+            <span class="exc-badge" id="exceptionCount">0 items</span>
+          </div>
+          <div class="exc-grid" id="exceptionList"></div>
+        </div>
+
+      </div><!-- /view-dashboard -->
+
+      <!-- ── VIEW: TRANSACTIONS ── -->
+      <div class="view" id="view-transactions">
+        <div class="view-title">All Transactions</div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Full Transaction Ledger</h2><span class="p-sub">Last 50 records</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>CHANNEL</th><th>AMOUNT</th><th>STATUS</th><th>RISK</th><th>TIMESTAMP</th></tr></thead>
+              <tbody id="allTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: SETTLEMENTS ── -->
+      <div class="view" id="view-settlements">
+        <div class="view-title">Settlements</div>
+        <div class="stat-row" id="settlementStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Settlement Batches</h2><span class="p-sub">Today's activity</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>BATCH ID</th><th>MERCHANT</th><th>AMOUNT</th><th>TX COUNT</th><th>STATUS</th><th>INITIATED</th></tr></thead>
+              <tbody id="settlementBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: REFUNDS ── -->
+      <div class="view" id="view-refunds">
+        <div class="view-title">Refunds</div>
+        <div class="stat-row" id="refundStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Refund Requests</h2><span class="p-sub">Pending &amp; recent</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>REF ID</th><th>CUSTOMER</th><th>ORIGINAL TXN</th><th>AMOUNT</th><th>REASON</th><th>STATUS</th></tr></thead>
+              <tbody id="refundBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: RISK ENGINE ── -->
+      <div class="view" id="view-risk">
+        <div class="view-title">Risk Engine</div>
+        <div class="stat-row" id="riskStats"></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Risk Score Trend</h2><span class="p-sub">30 days</span></div></div>
+            <div class="chart-box"><canvas id="riskTrendChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Fraud Type Breakdown</h2></div></div>
+            <div class="donut-box">
+              <canvas id="riskDonutChart"></canvas>
+              <div id="riskDonutLegend" class="donut-legend"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>High-Risk Transactions</h2><span class="p-sub">Score &gt; 70</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>AMOUNT</th><th>RISK SCORE</th><th>TRIGGER</th><th>STATUS</th></tr></thead>
+              <tbody id="riskTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: FRAUD MONITORING ── -->
+      <div class="view" id="view-fraud">
+        <div class="view-title">Fraud Monitoring</div>
+        <div class="stat-row" id="fraudStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Fraud Attempts by Hour</h2><span class="p-sub">Today</span></div></div>
+          <div class="chart-box"><canvas id="fraudBarChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Active Fraud Alerts</h2></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ALERT ID</th><th>TXN ID</th><th>CUSTOMER</th><th>AMOUNT</th><th>FRAUD TYPE</th><th>CONFIDENCE</th><th>ACTION</th></tr></thead>
+              <tbody id="fraudAlertsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: AUDIT LOGS ── -->
+      <div class="view" id="view-audit">
+        <div class="view-title">Audit Logs</div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>System Event Log</h2><span class="p-sub">Last 30 entries</span></div></div>
+          <div class="audit-log" id="auditLogList"></div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: API STATUS ── -->
+      <div class="view" id="view-api">
+        <div class="view-title">API Status</div>
+        <div class="api-grid" id="apiGrid"></div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-hdr"><div class="ptg"><h2>Latency Percentiles</h2><span class="p-sub">P50 / P95 / P99 — Last 24h</span></div></div>
+          <div class="chart-box"><canvas id="apiLatencyChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: INTEGRATIONS ── -->
+      <div class="view" id="view-integrations">
+        <div class="view-title">Integrations</div>
+        <div class="int-grid" id="integrationGrid"></div>
+      </div>
+
+    </main><!-- /main-scroll -->
+  </div><!-- /main-wrapper -->
+</div><!-- /app-shell -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="txModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><h3>Transaction Detail</h3><button id="modalClose">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPSMATRIX — Fintech Operations Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══ LIVE TICKER ══════════════════════════════════════ -->
+<div class="ticker-bar">
+  <div class="ticker-label">LIVE STREAM</div>
+  <div class="ticker-track"><div class="ticker-scroll" id="tickerContent"></div></div>
+  <div class="ticker-status"><span class="pulse-dot"></span><span>SYSTEMS NOMINAL</span></div>
+</div>
+
+<!-- ══ SHELL ════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+        <rect x="0"  y="0"  width="12" height="12" rx="2" fill="#3B82F6"/>
+        <rect x="16" y="0"  width="12" height="12" rx="2" fill="#8B5CF6" opacity=".8"/>
+        <rect x="0"  y="16" width="12" height="12" rx="2" fill="#8B5CF6" opacity=".8"/>
+        <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" opacity=".4"/>
+      </svg>
+      <div class="logo-text">
+        <span class="logo-name">OPSMATRIX</span>
+        <span class="logo-ver">v4.2.1 · Production</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">CORE OPERATIONS</div>
+    <nav>
+      <a class="nav-item active" data-view="dashboard" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span><em class="badge live">LIVE</em>
+      </a>
+      <a class="nav-item" data-view="transactions" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        <span>Transactions</span><em class="badge count" id="navTxCount">—</em>
+      </a>
+      <a class="nav-item" data-view="settlements" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        <span>Settlements</span>
+      </a>
+      <a class="nav-item" data-view="refunds" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109 9"/><path d="M3 3v9h9"/></svg>
+        <span>Refunds</span><em class="badge warn">12</em>
+      </a>
+    </nav>
+
+    <div class="nav-section-label">RISK & SECURITY</div>
+    <nav>
+      <a class="nav-item" data-view="risk" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Risk Engine</span>
+      </a>
+      <a class="nav-item" data-view="fraud" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span>Fraud Monitoring</span><em class="badge danger">3</em>
+      </a>
+      <a class="nav-item" data-view="audit" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Audit Logs</span>
+      </a>
+    </nav>
+
+    <div class="nav-section-label">INFRASTRUCTURE</div>
+    <nav>
+      <a class="nav-item" data-view="api" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>API Status</span><span class="status-pip green"></span>
+      </a>
+      <a class="nav-item" data-view="integrations" href="#">
+        <svg class="ni" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>Integrations</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="uptime-row"><span class="uptime-dot"></span><span>Online · <strong id="uptimeDisplay">99.97%</strong></span></div>
+      <button class="collapse-btn" id="sidebarToggle">
+        <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>Collapse</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+
+    <!-- HEADER -->
+    <header class="top-header">
+      <div class="hdr-left">
+        <div class="breadcrumb">
+          <span class="bc-root">Operations</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="bc-page" id="currentViewLabel">Command Center</span>
+        </div>
+      </div>
+      <div class="hdr-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search transactions, IDs, customers…" autocomplete="off">
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="hdr-right">
+        <div class="latency-chip"><span class="lat-dot"></span><span id="headerLatency">42ms</span></div>
+        <button class="hdr-btn export-btn" id="exportBtn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="hdr-btn notif-btn" id="notifBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge">5</span>
+        </button>
+        <div class="profile-chip">
+          <div class="avatar">AO</div>
+          <div class="profile-info">
+            <span class="p-name">Adewale Ops</span>
+            <span class="p-role">Sr. Analyst</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- NOTIFICATION DROPDOWN -->
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-hdr"><span>Notifications</span><button id="notifClear">Clear all</button></div>
+      <div id="notifList"></div>
+    </div>
+
+    <!-- ══ VIEWS ══════════════════════════════════════ -->
+    <main class="main-scroll">
+
+      <!-- ── VIEW: DASHBOARD ── -->
+      <div class="view active" id="view-dashboard">
+
+        <section class="kpi-grid" id="kpiGrid"></section>
+
+        <div class="two-col">
+          <!-- Transaction Table -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <div class="ptg">
+                <div class="live-badge green"><span class="ld"></span>LIVE STREAM</div>
+                <h2>Transaction Engine</h2>
+              </div>
+              <div class="tx-controls">
+                <div class="ftabs" id="filterTabs">
+                  <button class="ftab active" data-filter="all">All</button>
+                  <button class="ftab" data-filter="success">Success</button>
+                  <button class="ftab" data-filter="pending">Pending</button>
+                  <button class="ftab" data-filter="failed">Failed</button>
+                  <button class="ftab" data-filter="flagged">Flagged</button>
+                </div>
+                <div class="tx-search">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="txSearch" placeholder="Search…">
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>CHANNEL</th><th>AMOUNT</th><th>STATUS</th><th>RISK</th><th>TIME</th><th></th></tr></thead>
+                <tbody id="txTableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="txCount">0 transactions</span>
+              <div class="pager">
+                <button class="pg-btn" id="prevPage">‹</button>
+                <span id="pageInfo">1 / 1</span>
+                <button class="pg-btn" id="nextPage">›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="right-col">
+            <!-- Risk Intelligence -->
+            <div class="panel">
+              <div class="panel-hdr">
+                <div class="ptg">
+                  <div class="live-badge red"><span class="ld red"></span>AI MONITOR</div>
+                  <h2>Risk Intelligence</h2>
+                </div>
+              </div>
+              <div class="risk-body">
+                <div class="gauge-wrap">
+                  <canvas id="riskGaugeCanvas" width="180" height="100"></canvas>
+                  <div class="gauge-label">
+                    <span class="gauge-num" id="fraudScore">2.4</span>
+                    <span class="gauge-sub">Fraud Index</span>
+                  </div>
+                </div>
+                <div class="risk-stats">
+                  <div class="rs"><span>Flagged Today</span><strong class="red" id="flaggedCount">7</strong></div>
+                  <div class="rs"><span>False Positive</span><strong class="amber">1.2%</strong></div>
+                  <div class="rs"><span>Model Accuracy</span><strong class="green">98.7%</strong></div>
+                </div>
+              </div>
+              <div class="hm-section">
+                <div class="hm-label">ANOMALY GRID · 24H</div>
+                <div class="risk-heatmap" id="riskHeatmap"></div>
+              </div>
+              <div class="flagged-list" id="flaggedList"></div>
+            </div>
+
+            <!-- System Health -->
+            <div class="panel">
+              <div class="panel-hdr">
+                <div class="ptg"><h2>System Health</h2><span class="p-sub">Mission Control</span></div>
+                <span class="all-green">● ALL SYSTEMS GO</span>
+              </div>
+              <div class="health-list" id="healthGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="three-col">
+          <div class="panel">
+            <div class="panel-hdr">
+              <div class="ptg"><h2>Transaction Volume</h2><span class="p-sub">30-day trend</span></div>
+              <div class="period-tabs">
+                <button class="ptab active" data-period="30">30D</button>
+                <button class="ptab" data-period="7">7D</button>
+                <button class="ptab" data-period="24">24H</button>
+              </div>
+            </div>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Channel Split</h2><span class="p-sub">Distribution</span></div></div>
+            <div class="donut-box">
+              <canvas id="donutChart"></canvas>
+              <div id="donutLegend" class="donut-legend"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Success Rate</h2><span class="p-sub">By channel %</span></div></div>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Exception Queue -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="ptg">
+              <div class="live-badge amber"><span class="ld amber"></span>ACTION REQUIRED</div>
+              <h2>Exception Queue</h2>
+            </div>
+            <span class="exc-badge" id="exceptionCount">0 items</span>
+          </div>
+          <div class="exc-grid" id="exceptionList"></div>
+        </div>
+
+      </div><!-- /view-dashboard -->
+
+      <!-- ── VIEW: TRANSACTIONS ── -->
+      <div class="view" id="view-transactions">
+        <div class="view-title">All Transactions</div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Full Transaction Ledger</h2><span class="p-sub">Last 50 records</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>CHANNEL</th><th>AMOUNT</th><th>STATUS</th><th>RISK</th><th>TIMESTAMP</th></tr></thead>
+              <tbody id="allTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: SETTLEMENTS ── -->
+      <div class="view" id="view-settlements">
+        <div class="view-title">Settlements</div>
+        <div class="stat-row" id="settlementStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Settlement Batches</h2><span class="p-sub">Today's activity</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>BATCH ID</th><th>MERCHANT</th><th>AMOUNT</th><th>TX COUNT</th><th>STATUS</th><th>INITIATED</th></tr></thead>
+              <tbody id="settlementBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: REFUNDS ── -->
+      <div class="view" id="view-refunds">
+        <div class="view-title">Refunds</div>
+        <div class="stat-row" id="refundStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Refund Requests</h2><span class="p-sub">Pending &amp; recent</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>REF ID</th><th>CUSTOMER</th><th>ORIGINAL TXN</th><th>AMOUNT</th><th>REASON</th><th>STATUS</th></tr></thead>
+              <tbody id="refundBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: RISK ENGINE ── -->
+      <div class="view" id="view-risk">
+        <div class="view-title">Risk Engine</div>
+        <div class="stat-row" id="riskStats"></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Risk Score Trend</h2><span class="p-sub">30 days</span></div></div>
+            <div class="chart-box"><canvas id="riskTrendChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hdr"><div class="ptg"><h2>Fraud Type Breakdown</h2></div></div>
+            <div class="donut-box">
+              <canvas id="riskDonutChart"></canvas>
+              <div id="riskDonutLegend" class="donut-legend"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>High-Risk Transactions</h2><span class="p-sub">Score &gt; 70</span></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>TXN ID</th><th>CUSTOMER</th><th>AMOUNT</th><th>RISK SCORE</th><th>TRIGGER</th><th>STATUS</th></tr></thead>
+              <tbody id="riskTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: FRAUD MONITORING ── -->
+      <div class="view" id="view-fraud">
+        <div class="view-title">Fraud Monitoring</div>
+        <div class="stat-row" id="fraudStats"></div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Fraud Attempts by Hour</h2><span class="p-sub">Today</span></div></div>
+          <div class="chart-box"><canvas id="fraudBarChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>Active Fraud Alerts</h2></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ALERT ID</th><th>TXN ID</th><th>CUSTOMER</th><th>AMOUNT</th><th>FRAUD TYPE</th><th>CONFIDENCE</th><th>ACTION</th></tr></thead>
+              <tbody id="fraudAlertsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: AUDIT LOGS ── -->
+      <div class="view" id="view-audit">
+        <div class="view-title">Audit Logs</div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="ptg"><h2>System Event Log</h2><span class="p-sub">Last 30 entries</span></div></div>
+          <div class="audit-log" id="auditLogList"></div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: API STATUS ── -->
+      <div class="view" id="view-api">
+        <div class="view-title">API Status</div>
+        <div class="api-grid" id="apiGrid"></div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-hdr"><div class="ptg"><h2>Latency Percentiles</h2><span class="p-sub">P50 / P95 / P99 — Last 24h</span></div></div>
+          <div class="chart-box"><canvas id="apiLatencyChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ── VIEW: INTEGRATIONS ── -->
+      <div class="view" id="view-integrations">
+        <div class="view-title">Integrations</div>
+        <div class="int-grid" id="integrationGrid"></div>
+      </div>
+
+    </main><!-- /main-scroll -->
+  </div><!-- /main-wrapper -->
+</div><!-- /app-shell -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="txModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><h3>Transaction Detail</h3><button id="modalClose">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
